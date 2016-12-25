@@ -11,56 +11,51 @@
 
 bool SR_saliency(cv::Mat &img, cv::Mat &saliency_map)
 {
-  if( img.empty() )
-	{
-		std::cerr << "img data is empty, cannot perform saliency detection" << std::endl;
-		return false;
-	}
+	CV_Assert( !img.empty() );
+	
 	cv::Mat rescaled;
 	// convert to grayscale
 	if( 3 == img.channels() )
 	{
 		cv::cvtColor(img, rescaled, CV_BGR2GRAY);
 	}
-	else if( 1 != img.channels() )
+	else 
 	{
-		std::cerr << "img channel number is " << img.channels() << ", cannot perform saliency detection" << std::endl;
-		return false;
+		CV_Assert( 1 == img.channels() );
 	}
-  
 	const int rescale_size = 64;
-  cv::resize( rescaled, rescaled, cv::Size(rescale_size, rescale_size) );
+  	cv::resize( rescaled, rescaled, cv::Size(rescale_size, rescale_size) );
   
-  cv::Mat planes[] = { cv::Mat_< double >(rescaled), cv::Mat::zeros( rescaled.size(), CV_64F ) };
-  cv::Mat complexImg;
-  cv::merge(planes, 2, complexImg); // Add to the expanded another plane with zeros
-  cv::dft(complexImg, complexImg);  // this way the result may fit in the source matrix
-  cv::split(complexImg, planes); // planes[0] = Re(DFT(I), planes[1] = Im(DFT(I))
+  	cv::Mat planes[] = { cv::Mat_< double >(rescaled), cv::Mat::zeros( rescaled.size(), CV_64F ) };
+  	cv::Mat complexImg;
+  	cv::merge(planes, 2, complexImg); // Add to the expanded another plane with zeros
+ 	cv::dft(complexImg, complexImg);  // this way the result may fit in the source matrix
+  	cv::split(complexImg, planes); // planes[0] = Re(DFT(I), planes[1] = Im(DFT(I))
 
-  cv::Mat mag, logmag, smooth, spectralResidual;
-  cv::magnitude(planes[0], planes[1], mag);	
+  	cv::Mat mag, logmag, smooth, spectralResidual;
+  	cv::magnitude(planes[0], planes[1], mag);	
 	// compute the magnitude and switch to logarithmic scale
-  // => log(sqrt(Re(DFT(I))^2 + Im(DFT(I))^2))
-  cv::log(mag, logmag);
-  cv::boxFilter(logmag, smooth, -1, cv::Size(3,3));
-  cv::subtract(logmag, smooth, spectralResidual);
-  cv::exp(spectralResidual, spectralResidual);
+  	// => log(sqrt(Re(DFT(I))^2 + Im(DFT(I))^2))
+  	cv::log(mag, logmag);
+  	cv::boxFilter(logmag, smooth, -1, cv::Size(3,3));
+  	cv::subtract(logmag, smooth, spectralResidual);
+  	cv::exp(spectralResidual, spectralResidual);
     
 	// real part 
-  planes[0] = planes[0].mul(spectralResidual) / mag;
+  	planes[0] = planes[0].mul(spectralResidual) / mag;
 	// imaginary part 
-  planes[1] = planes[1].mul(spectralResidual) / mag;
+  	planes[1] = planes[1].mul(spectralResidual) / mag;
 
-  cv::merge(planes, 2, complexImg);
-  cv::dft(complexImg, complexImg, cv::DFT_INVERSE | cv::DFT_SCALE);
-  cv::split(complexImg, planes);
+  	cv::merge(planes, 2, complexImg);
+  	cv::dft(complexImg, complexImg, cv::DFT_INVERSE | cv::DFT_SCALE);
+  	cv::split(complexImg, planes);
 	// get magnitude
-  cv::magnitude(planes[0], planes[1], mag);
+  	cv::magnitude(planes[0], planes[1], mag);
 	// get square of magnitude
-  cv::multiply(mag, mag, mag);
+  	cv::multiply(mag, mag, mag);
 	// Gaussian kernel size. ksize.width and ksize.height can differ but they both must be positive and odd
 	
-  cv::GaussianBlur(mag, mag, cv::Size(5,5), 8, 8);
+  	cv::GaussianBlur(mag, mag, cv::Size(5,5), 8, 8);
 	cv::normalize(mag, saliency_map, 0, 1, CV_MINMAX);
 	return saliency_ratio;
 }
