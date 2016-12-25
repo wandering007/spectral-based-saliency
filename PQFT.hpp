@@ -10,12 +10,12 @@
 
 void PQFT(cv::Mat &pre_img, cv::Mat &next_img, cv::Mat &saliency_map)
 {
-  CV_Assert( !img.empty() && !next_img.empty() );
+  	CV_Assert( !img.empty() && !next_img.empty() );
 	CV_Assert( 3 == pre_img.channels() && 3 == next_img.channels() )
-  CV_Assert(pre_img.rows == next_img.rows && pre_img.cols == next_img.cols);
+ 	CV_Assert(pre_img.rows == next_img.rows && pre_img.cols == next_img.cols);
 	const int rescale_size = 64;
 	cv::Mat rescaled; //expand input image to optimal size
-  cv::resize( next_img, rescaled, cv::Size(rescale_size, rescale_size), CV_INTER_LINEAR );
+  	cv::resize( next_img, rescaled, cv::Size(rescale_size, rescale_size), CV_INTER_LINEAR );
 	// seperate the image in 3 places (B, G and R)
 	std::vector< cv::Mat > bgr_planes;
 	cv::split( rescaled, bgr_planes );
@@ -34,7 +34,7 @@ void PQFT(cv::Mat &pre_img, cv::Mat &next_img, cv::Mat &saliency_map)
 	cv::Mat BY = B - Y;
 	// intensity channel and motion channel
 	cv::Mat I = (r + g + b) / 3;
-  cv::resize( pre_img, rescaled, cv::Size(rescale_size, rescale_size), CV_INTER_LINEAR );
+  	cv::resize( pre_img, rescaled, cv::Size(rescale_size, rescale_size), CV_INTER_LINEAR );
 	cv::split(rescaled, bgr_planes);
 	cv::Mat last_I = (bgr_planes[0] + bgr_planes[1] + bgr_planes[2]) / 3;
 	cv::Mat M = cv::abs(I - last_I);
@@ -70,14 +70,14 @@ void PQFT(cv::Mat &pre_img, cv::Mat &next_img, cv::Mat &saliency_map)
 	cv::Mat mag = mag1 + mag2;
 	cv::sqrt(mag, mag);
 	// normalize, only save phase
-    planes[0] = planes[0] / mag;
-    planes[1] = planes[1] / mag;
+    	planes[0] = planes[0] / mag;
+    	planes[1] = planes[1] / mag;
 	cv::merge(planes, 2, f2); // note that what planes contains is f2's data
 	
 	cv::split(f1, planes);
 	// obeying the paper, rescale_size multiplied to justify the coefficient of ifft
 	planes[0] = rescale_size * planes[0] / mag;
-    planes[1] = rescale_size * planes[1] / mag;
+    	planes[1] = rescale_size * planes[1] / mag;
 	cv::merge(planes, 2, f1);
 	
 	// get phase spectrum, inverse pft
@@ -93,7 +93,7 @@ void PQFT(cv::Mat &pre_img, cv::Mat &next_img, cv::Mat &saliency_map)
 	cv::magnitude(planes[0], planes[1], mag2);
 	cv::multiply(mag2, mag2, mag2);
 	
-  // the square of q'(t) magnitude
+  	// the square of q'(t) magnitude
 	mag = mag1 + mag2;
 	// smoothing
 	cv::GaussianBlur( mag, mag, cv::Size(5, 5), 8., 8. );
