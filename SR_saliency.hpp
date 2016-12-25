@@ -7,7 +7,6 @@
 */
 
 #include <opencv2/opencv.hpp>
-#include <iostream>
 
 bool SR_saliency(cv::Mat &img, cv::Mat &saliency_map)
 {
