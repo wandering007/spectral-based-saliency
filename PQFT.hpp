@@ -11,7 +11,7 @@
 void PQFT(cv::Mat &pre_img, cv::Mat &next_img, cv::Mat &saliency_map)
 {
   	CV_Assert( !img.empty() && !next_img.empty() );
-	CV_Assert( 3 == pre_img.channels() && 3 == next_img.channels() )
+	CV_Assert( 3 == pre_img.channels() && 3 == next_img.channels() );
  	CV_Assert(pre_img.rows == next_img.rows && pre_img.cols == next_img.cols);
 	const int rescale_size = 64;
 	cv::Mat rescaled; //expand input image to optimal size
