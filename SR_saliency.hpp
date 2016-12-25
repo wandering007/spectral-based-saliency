@@ -8,7 +8,7 @@
 
 #include <opencv2/opencv.hpp>
 
-bool SR_saliency(cv::Mat &img, cv::Mat &saliency_map)
+void SR_saliency(cv::Mat &img, cv::Mat &saliency_map)
 {
 	CV_Assert( !img.empty() );
 	
@@ -56,7 +56,7 @@ bool SR_saliency(cv::Mat &img, cv::Mat &saliency_map)
 	
   	cv::GaussianBlur(mag, mag, cv::Size(5,5), 8, 8);
 	cv::normalize(mag, saliency_map, 0, 1, CV_MINMAX);
-	return saliency_ratio;
+	return;
 }
 
 /*
