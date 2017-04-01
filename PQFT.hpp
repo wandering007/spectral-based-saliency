@@ -76,13 +76,13 @@ void PQFT(cv::Mat &pre_img, cv::Mat &next_img, cv::Mat &saliency_map)
 	
 	cv::split(f1, planes);
 	// obeying the paper, rescale_size multiplied to justify the coefficient of ifft
-	planes[0] = rescale_size * planes[0] / mag;
-    	planes[1] = rescale_size * planes[1] / mag;
+	planes[0] = planes[0] / mag;
+    	planes[1] = planes[1] / mag;
 	cv::merge(planes, 2, f1);
 	
 	// get phase spectrum, inverse pft
-	cv::dft(f1, f1, cv::DFT_INVERSE | cv::DFT_SCALE);
-	cv::dft(f2, f2, cv::DFT_INVERSE | cv::DFT_SCALE);
+	cv::dft(f1, f1, cv::DFT_INVERSE);
+	cv::dft(f2, f2, cv::DFT_INVERSE);
 
 	// get magnitude, which is phase information
 	cv::split(f1, planes);
