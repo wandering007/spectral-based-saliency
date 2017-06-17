@@ -1,5 +1,5 @@
 # Spectral-based Saliency
-Visual saliency algorithms based on spectral analysis models, implemented by OpenCV C++.  
+Visual saliency algorithms based on spectral analysis models, implemented by [OpenCV](https://github.com/opencv/opencv) C++.  
 
     void SR_saliency(cv::Mat &img, cv::Mat &saliency_map);
     
